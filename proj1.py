@@ -79,3 +79,5 @@ with open('cuccos.txt', 'w') as f:
 
 
 myfile.close()
+
+kutyaaa
