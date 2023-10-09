@@ -26,7 +26,9 @@ frame1 = [  [sg.Text('Teszt program', font=("Arial", 11))],
 
 frame2 = [
     [sg.VPush()],
-    [sg.Text("Üdvözöllek"), sg.Text("",  size=7)],
+    [sg.Text("Üdvözöllek") , sg.Text("",  size=7)],
+    [sg.Text("A publikus IP-d: ") , sg.Text("",  size=7)],
+    [sg.Text("") , sg.Text("", key='ip')],
     [sg.Button("OK")],
     [sg.VPush()],
 ]
@@ -74,7 +76,10 @@ while True:
            #---------------------------------------
        frame2.update(visible=True)
        frame1.update(visible=False)
-       
+       from requests import get
+       ip = get('https://api.ipify.org').content.decode('utf8')
+      
+       window['ip'].Update(ip)
        if event == sg.WIN_CLOSED or event == 'OK':
            break
        
