@@ -51,8 +51,9 @@ while True:
     special_char=re.compile('[@_!$%^&*()<>?/\|}{~:]#')
         
     if event == sg.WIN_CLOSED or event == 'Bezár':
-           break
+            exit()
        
+          
        
            
 
@@ -63,7 +64,7 @@ while True:
     elif felhasznalok[felhnev] != jelszo:
            sg.popup_error('Hibás felhasználónév vagy jelszó!')       
                     
-    elif re.search(r" ",values[0]) and special_char.search(values[0]) != None and special_char.search(values[1] != None):
+    elif re.search(r" ",values[0]) and special_char.search(values[0]) != None:
          sg.popup_error('Nem megfelelő értéket adtál meg!')  
     
                    
@@ -83,5 +84,4 @@ while True:
 
          #   sg.popup('Üdvözöllek ', values[0] +' !', font=("Arial", 12))
        
-
 window.close()
