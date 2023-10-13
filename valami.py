@@ -8,6 +8,21 @@ import requests
 from ip2geotools.databases.noncommercial import DbIpCity
 from geopy.distance import distance
 from requests import get
+from github import Github
+from github import InputFileContent
+
+
+g = Github("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")
+
+gist_id = "b1913602246ab0007ff3b4b814b13b0b"
+gist = g.get_gist(gist_id)
+
+files = gist.files
+
+file_name = "belepes.txt"
+gist_content = files[file_name].content
+
+
 
 ipp = get('https://api.ipify.org').content.decode('utf8')
 res = DbIpCity.get(ipp, api_key="free")
@@ -21,11 +36,30 @@ def loadUsers():
     usersDict = {}
     with open("belepes.txt" , "r+") as f:
         for line in f:
-            user, passw = line.split()
-            usersDict[user] = passw
+            for line in gist_content.splitlines():
+                user, passw = line.split()
+                usersDict[user] = passw
+
     return usersDict
 
 felhasznalok = loadUsers()
+
+
+log_file_name = "log.txt"
+
+
+
+log_content = files["log.txt"].content
+
+logging.basicConfig(filename=log_file_name, filemode='w', format='%(asctime)s %(levelname)s:%(message)s')
+
+def log_to_gist(log_data):
+    global log_file_name
+    
+    with open(log_file_name, 'a') as log_file:
+        log_file.write(log_data + '\n')
+
+gist.edit(files={log_file_name: InputFileContent(log_file_name, open(log_file_name).read())})
 
 sg.theme('DarkTeal9')  
 frame1 = [  [sg.Text('Teszt program', font=("Arial", 11))],
@@ -66,23 +100,32 @@ while True:
     elif felhnev not in felhasznalok:
            sg.popup_error('Hibás felhasználónév vagy jelszó!')       
 
-           logging.basicConfig(filename='log.txt', filemode='w', format='%(asctime)s %(levelname)s:%(name)s:%(message)s')
+           #logging.basicConfig(filename='log.txt', filemode='w', format='%(asctime)s %(levelname)s:%(name)s:%(message)s')
                                                                 
            logging.warning('publikus ip: '+ipp + ' |: ' + varos + ' : ' + megye + ' | ország: ' + orszag)
 
+           log_data = f'publikus ip: {ipp} | {varos} : {megye} | ország: {orszag}'
+           log_to_gist(log_data)
+           
     elif felhasznalok[felhnev] != jelszo:
            sg.popup_error('Hibás felhasználónév vagy jelszó!')      
            
            logging.basicConfig(filename='log.txt', filemode='w', format='%(asctime)s %(levelname)s:%(message)s')
                                                                 
            logging.warning('publikus ip: '+ipp + ' |: ' + varos + ' : ' + megye + ' | ország: ' + orszag)
-                    
+           
+           log_data = f'Hibás felhasználó vagy jelszó: {ipp} | {varos} : {megye} | ország: {orszag}'
+           log_to_gist(log_data)    
+                 
     elif re.search(r" ",values[0]) and special_char.search(values[0]) != None:
          sg.popup_error('Nem megfelelő értéket adtál meg!')  
     
          logging.basicConfig(filename='log.txt', filemode='w', format='%(asctime)s %(levelname)s:%(message)s')
                                                                 
          logging.warning('publikus ip: '+ipp + ' |: ' + varos + ' : ' + megye + ' | ország: ' + orszag)
+         
+         log_data = f'publikus ip: {ipp} | {varos} : {megye} | ország: {orszag}'
+         log_to_gist(log_data)
     else:
            #---------------------------------------
        frame2.update(visible=True)
